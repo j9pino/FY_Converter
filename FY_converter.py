@@ -53,6 +53,8 @@ def api_loop(dataframe):
     dates_df = pd.DataFrame(results_list, columns = ['DOI','coverDate','Times Cited', 'FY'])
     
     dates_df = dates_df.reset_index(drop=True)
+    dates_df['FY'] = dates_df['FY'].astype(str)
+    dates_df['coverDate'] = dates_df['coverDate'].astype(str)
     
     #display final dataframe
     dates_df = dates_df.drop_duplicates()
