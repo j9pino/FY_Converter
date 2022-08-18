@@ -73,7 +73,7 @@ def show_download_button():
     st.download_button(
         label="Download data as CSV",
         data=csv_thing,
-        file_name='DOIs_with_JIFs.csv',
+        file_name='DOIs_with_FY.csv',
         mime='text/csv')
          
 #streamlit upload button
