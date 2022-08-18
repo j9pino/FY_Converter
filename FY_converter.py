@@ -40,10 +40,13 @@ def api_loop(dataframe):
             times_cited = rJSON['abstracts-retrieval-response']['coredata']['citedby-count']
         except:
             times_cited = 'No Citations Found'
-        if int(coverDate[5:7]) >= 10:
-            year = int(coverDate[:4])+1
-        else:
-            year = int(coverDate[:4])
+        try:
+            if int(coverDate[5:7]) >= 10:
+                year = int(coverDate[:4])+1
+            else:
+                year = int(coverDate[:4])
+        except ValueError:
+            year = 'No Date Found'
         results_list.append([DOI,coverDate,times_cited,year])
         my_bar.progress(percent_complete)
         time.sleep(0.05)
