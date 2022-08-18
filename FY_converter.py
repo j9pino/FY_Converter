@@ -5,7 +5,7 @@ import time
 
 st.experimental_memo.clear()
 st.set_page_config(page_title="FY Converter")
-st.title("Publications: Calendar Year to Fiscal Year")
+st.title("Pubs: Calendar Year to Fiscal Year")
 
 #Scopus API headers
 headers = {'X-ELS-APIKey': st.secrets['API_KEY'], 
