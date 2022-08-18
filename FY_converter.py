@@ -3,6 +3,10 @@ import pandas as pd
 import requests, json
 import time
 
+st.experimental_memo.clear()
+st.set_page_config(page_title="FY Converter")
+st.title("Publications: Calendar Year to Fiscal Year")
+
 #Scopus API headers
 headers = {'X-ELS-APIKey': st.secrets['API_KEY'], 
            'Accept': 'application/json'}
@@ -15,13 +19,13 @@ results_list = []
 csv_thing = None
    
 #convert dataframe to csv for exporting purposes
-@st.cache(suppress_st_warning=True)
+@st.experimental_memo(suppress_st_warning=True)
 def convert_df_to_csv(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv(index=False).encode('utf-8')
 
 #main function that uses list of DOIs with API call
-@st.cache(suppress_st_warning=True)
+@st.experimental_memo(suppress_st_warning=True)
 def api_loop(dataframe):
     global csv_thing
     global dates_df
@@ -63,7 +67,7 @@ def api_loop(dataframe):
     #convert df to csv
     csv_thing = convert_df_to_csv(dates_df)
 
-@st.cache(suppress_st_warning=True)
+@st.experimental_memo(suppress_st_warning=True)
 def show_download_button():
     global csv_thing
     st.download_button(
@@ -73,7 +77,9 @@ def show_download_button():
         mime='text/csv')
          
 #streamlit upload button
-data = st.file_uploader("Upload a CSV of DOIs, one per line, no header column")
+data = st.file_uploader("Upload a CSV of DOIs, one per line, no header column",
+                       key = '1',
+                       help='Make sure your upload file is a CSV and only contains DOIs, one per line, with no header')
 
 #read in uploaded CSV and write to dataframe
 if data is not None:
@@ -85,4 +91,5 @@ if data is not None:
     my_bar = st.progress(0.0)
     api_loop(df)
     if csv_thing is not None:
+        st.success('Your Download is Ready!')
         show_download_button()
