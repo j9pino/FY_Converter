@@ -37,7 +37,16 @@ def api_loop(dataframe):
             continue
         r = requests.get('https://api.crossref.org/works/'+DOI+'?mailto=martindalete@ornl.gov')        
         rText = r.text
-        rJSON = json.loads(rText)
+        try:
+            rJSON = json.loads(rText)
+        except:
+            DOI = ''
+            title = ''
+            pub_date = ''
+            FY = ''
+            results_list.append([DOI,title,pub_date,FY])
+            my_bar.progress(percent_complete)
+            continue
         try:
             title = rJSON['message']['title'][0]
         except:
