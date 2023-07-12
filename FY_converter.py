@@ -8,7 +8,7 @@ st.experimental_memo.clear()
 st.set_page_config(page_title="FY Converter")
 st.title("Pubs: Convert Calendar Year to Fiscal Year")
 
-headers = {'Mailto':'martindalete@ornl.gov'}
+headers = {'Mailto':'pinojc@ornl.gov'}
 
 #create empty lists to which we will append API-gathered data
 results_list = []
@@ -35,7 +35,7 @@ def api_loop(dataframe):
             results_list.append([DOI,title,pub_date,FY])
             my_bar.progress(percent_complete)
             continue
-        r = requests.get('https://api.crossref.org/works/'+DOI+'?mailto=martindalete@ornl.gov')        
+        r = requests.get('https://api.crossref.org/works/'+DOI+'?mailto=pinojc@ornl.gov')        
         rText = r.text
         try:
             rJSON = json.loads(rText)
