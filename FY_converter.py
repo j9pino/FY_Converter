@@ -14,13 +14,13 @@ headers = {'Mailto':'pinojc@ornl.gov'}
 results_list = []
   
 #convert dataframe to csv for exporting purposes
-@st.experimental_memo(suppress_st_warning=True)
+@st.experimental_memo(experimental_allow_widgets=True)
 def convert_df_to_csv(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv(index=False).encode('utf-8')
 
 #main function that uses list of DOIs with API call
-@st.experimental_memo(suppress_st_warning=True)
+@st.experimental_memo(experimental_allow_widgets=True)
 def api_loop(dataframe):
     global dates_df
     for i in range(len(df)):
@@ -92,7 +92,7 @@ def api_loop(dataframe):
     st.dataframe(dates_df)
     st.markdown(get_table_download_link(dates_df), unsafe_allow_html=True)
 
-@st.experimental_memo(suppress_st_warning=True)
+@st.experimental_memo(experimental_allow_widgets=True)
 def get_table_download_link(df):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
