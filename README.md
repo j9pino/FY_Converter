@@ -1,2 +1,2 @@
 # FY_Converter
-Get FY assignment for a list of DOIs
+Associate your fiscal year with a list of published DOIs.
