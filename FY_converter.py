@@ -122,7 +122,7 @@ with st.form("my-form", clear_on_submit=True):
             st.balloons()
             st.success('The "FY" column has been appended to the original file!')
 
-        elif data.name.lower().endswith('.xlsx'):
+        elif data.name.lower().endswith('.xlsx') or data.name.lower().endswith('.xls'):
             df = pd.read_excel(data, header=[0])
             # display dataframe of uploaded DOIs
             st.dataframe(df)
