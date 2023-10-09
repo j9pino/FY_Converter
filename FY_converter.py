@@ -4,11 +4,14 @@ import requests
 import json
 import base64
 import xlrd
+from concurrent.futures import ThreadPoolExecutor
 
 st.cache_data.clear()
 st.set_page_config(page_title="FY Converter")
 st.title("Pubs: Convert Calendar Year to Fiscal Year")
 
+# Modify your Crossref API endpoint and headers accordingly
+crossref_api_endpoint = 'https://api.crossref.org/works'
 headers = {'Mailto': 'pinojc@ornl.gov'}
 
 df = pd.DataFrame()  # Initial empty DataFrame
@@ -19,9 +22,9 @@ def get_table_download_link(df):
     b64 = base64.b64encode(csv.encode()).decode()
     return f'<a href="data:file/csv;base64,{b64}" download="processedfile.csv">Download your processed CSV file</a>'
 
-def fetch_data(DOI, fiscal_year_start_month):
+def fetch_data(DOI):
     try:
-        r = requests.get('https://api.crossref.org/works/' + DOI + '?mailto=pinojc@ornl.gov', headers=headers)
+        r = requests.get(f'{crossref_api_endpoint}/{DOI}', headers=headers)
         rJSON = r.json()
 
         title = rJSON['message']['title'][0] if 'title' in rJSON['message'] else 'No Article Title Found'
@@ -34,7 +37,7 @@ def fetch_data(DOI, fiscal_year_start_month):
         FY = 'NA' if month == 'XX' else (int(year) + 1 if int(month) >= fiscal_year_start_month else year)
 
     except:
-        DOI, title, pub_date, FY = '', '', '', 'No published date found'
+        title, pub_date, FY = '', '', 'No published date found'
 
     return [DOI, title, pub_date, FY]
 
@@ -44,12 +47,18 @@ def api_loop(dataframe, fiscal_year_start_month):
     total_len = len(dataframe)
     my_bar = st.progress(0.0)
 
-    for idx, row in dataframe.iterrows():
-        DOI = str(row['DOI']).replace(' ', '') if 'DOI' in row else ''
-        results = fetch_data(DOI, fiscal_year_start_month)
-        results_list.append(results)
+    # Use ThreadPoolExecutor to parallelize API requests
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = []
+        for idx, row in dataframe.iterrows():
+            DOI = str(row['DOI']).replace(' ', '') if 'DOI' in row else ''
+            future = executor.submit(fetch_data, DOI)
+            futures.append(future)
 
-        my_bar.progress((idx + 1) / total_len)
+        for idx, future in enumerate(futures):
+            results = future.result()
+            results_list.append(results)
+            my_bar.progress((idx + 1) / total_len)
 
     dataframe['FY'] = [item[3] for item in results_list]
     st.dataframe(dataframe)
